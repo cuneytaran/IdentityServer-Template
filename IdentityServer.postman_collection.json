@@ -1,0 +1,217 @@
+{
+	"info": {
+		"_postman_id": "0cdbf387-1aa5-4c4a-8d2a-18d9823cc74e",
+		"name": "IdentityServer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Site token client_id",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "Client1",
+							"type": "default"
+						},
+						{
+							"key": "client_secret",
+							"value": "secret",
+							"type": "default"
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "default"
+						}
+					]
+				},
+				"url": "https://localhost:5001/connect/token"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5015/api/products/getproducts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": {
+						"headerPrefix": "Bearer",
+						"addTokenTo": "header"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjY5ODUwNzcsImV4cCI6MTY2Njk4ODY3NywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MDAwIiwiYXVkIjoicmVzb3VyY2VfYXBpMSIsImNsaWVudF9pZCI6IkNsaWVudDEiLCJqdGkiOiJBQ0QwMzQwRkVEOUI0NjExMEVFRTEyRkY2NTc2NEQyRCIsImlhdCI6MTY2Njk4NTA3Nywic2NvcGUiOlsiYXBpMS5yZWFkIl19.yPlkf6jWM-6hTNljemKRsXEpaUExHrq4uHkpHJnKEOJryoosfQwd6plC3ZJZ8aqNn1EmpC6tQ8BASwizjwmp7YhBHQiX01Ww2v_Ip_q5Tp0H0Et_jB4O0uALNJ7ae8IG5AwSzQFkVrdv_m6tnViH_bwsv0xgM2SX0tkXXvPprci_qDr-fH_PFTbkPkcamTXCdZv2sVyTnYxLIG8SP-lfdW5JsHjbHHC8_BI2NPr0fgUJozyRIE2j3uLRZ8NHuChJfB1yrSkIR47WfgFw4XKMKC6OAPHXy3ZFt3jXHxMdjlBwRh0_zwnYk3ZviwsrnjzYMrVjWPH4BKcxh_1VDdiIvA",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "Client1",
+							"type": "default",
+							"disabled": true
+						},
+						{
+							"key": "client_secret",
+							"value": "secret",
+							"type": "default",
+							"disabled": true
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "default",
+							"disabled": true
+						}
+					]
+				},
+				"url": "https://localhost:5016/api/products/getproducts"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5020/api/pictures/getpictures",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://localhost:5020/api/pictures/getpictures"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5001/.well-known/openid-configuration",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://localhost:5001/.well-known/openid-configuration"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5001/connect/introspect",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "secretapi1",
+						"username": "resource_api1"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjcwNTY2NzAsImV4cCI6MTY2NzA2MDI3MCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSIsImF1ZCI6InJlc291cmNlX2FwaTEiLCJjbGllbnRfaWQiOiJDbGllbnQxIiwianRpIjoiQ0VBRTMwNTM4NTc4NjI2QTVGMTEyOEJCMEQ4RjAzMzQiLCJpYXQiOjE2NjcwNTY2NzAsInNjb3BlIjpbImFwaTEucmVhZCJdfQ.LoilrdRY7eKm-Stt-yl_h_uNcIEXfOoeByzpulq1yVT_NDGJjsYbAh-o16M32wZNSWtQGp-pGt59w-VeGhyINyQ5hn6YfiQ7CHLGMJ87ajR9kOwoidhmRdAf5MqHbw1Qx6RmhJVy2Q9zQ3A9Il-DF9rQS2OxQUBkSYSljIna4cJ5hT35e3k_q1FGUFsf8y1IUwneh9HA1QeBgYSguPE7_h004aAhd5FcPXyKQwBB7vpn6H4Jxnvn8T1V9-a7-B6agMGidJ_TRjUYSZLBl_kPpsPP2a4ooU0rhwnUlQaIU5D8drROrEI1uSVHDaDQ-zlmH3HdZpUYaJ4sctDAGiZqrg",
+							"type": "default"
+						}
+					]
+				},
+				"url": "https://localhost:5001/connect/introspect"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5001/connect/userinfo",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": {
+						"redirect_uri": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjcxMjI4ODcsImV4cCI6MTY2NzEyNjQ4NywiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSIsImF1ZCI6InJlc291cmNlX2FwaTEiLCJjbGllbnRfaWQiOiJDbGllbnQxIiwianRpIjoiM0JEMEYxODY3MEVDOUZGQUVENzk1MzM4OTRCMzA0OEMiLCJpYXQiOjE2NjcxMjI4ODcsInNjb3BlIjpbImFwaTEucmVhZCJdfQ.H7N5uwh1DLPAbHWiCAtuNmAficqrz-MFSMBwRAzPTKUqVzrS-yoanhzrlSJq3pG374ACuxVZvfL4sVWq7cpSldXpqoLwlXbwY0QNCNGFdhJzjAsbBxwfaSamK7S85U_rPu_Wl30j2NM2VKRV3XH-8U8CSgRHPeq-m7YnkmHI6LTC86shi5UgnZmRyQCodreDMK3AsBLuvxAfOzUIUU5U4H3iPW9pQLIpvdnj2bplqOV7xSvJ3hXEZa4I12dUEQ7ZsYYFtt8XA1Ty6qUX9t8O3LgCr8lZIY8zcHhYhOpcsUlfRYnTO8n3kfj2PYk0nFg8L177A8mqg14lpbd4EioeZQ",
+						"headerPrefix": "Bearer",
+						"addTokenTo": "header"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "https://localhost:5001/connect/userinfo"
+			},
+			"response": []
+		},
+		{
+			"name": "Üye Kaydı",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": {
+						"addTokenTo": "header"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"UserName\":\"caran\",\r\n    \"Email\":\"cuneytaran@gmail.com\",\r\n    \"Password\":\"C@ran1525\",\r\n    \"City\":\"İstanbul\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://localhost:5001/api/user/signup"
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "Client1-ResourceOwner-Mvc",
+							"type": "default"
+						},
+						{
+							"key": "client_secret",
+							"value": "secret",
+							"type": "default"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "default"
+						},
+						{
+							"key": "username",
+							"value": "cuneytaran@gmail.com",
+							"type": "default"
+						},
+						{
+							"key": "password",
+							"value": "C@ran1525",
+							"type": "default"
+						}
+					]
+				},
+				"url": "https://localhost:5001/connect/token"
+			},
+			"response": []
+		}
+	]
+}

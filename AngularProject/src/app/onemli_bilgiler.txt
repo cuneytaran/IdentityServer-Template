@@ -1,0 +1,2 @@
+TSLint TSLint support for Visual Studio Code Microsoft - yükleyebilirsin. imla kurallarına uyumulu yazmanı sağlıyor
+--login olduktan sonra user hakkında daha fazla bilgi almak istiyorsan. userinfo endpointine istek atabilirsin.
