@@ -1,0 +1,2 @@
+cache silme
+ng config cli.cache.enabled false

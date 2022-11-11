@@ -9,7 +9,7 @@ using static IdentityServer4.IdentityServerConstants;
 namespace IdentityAPI.AuthServer.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(LocalApi.PolicyName)]//yetkilendirme tanımladık.....111222233333
+    [Authorize(LocalApi.PolicyName)]//yetkilendirme tanımladık.....
     [ApiController]
     public class UserController : ControllerBase
     {
