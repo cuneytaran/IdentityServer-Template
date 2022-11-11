@@ -1,0 +1,465 @@
+﻿ AuthServer => http://localhost:5000;
+ Client1    => http://localhost:5005;
+ Client2    => http://localhost:5010;
+ API1       => http://localhost:5015;
+ API2       => http://localhost:5020;
+
+ Token içini görmek için => https://jwt.io/
+ Documan adresi :https://identityserver4.readthedocs.io/en/latest/
+ IdentityServer4 Template adresi:https://github.com/IdentityServer/IdentityServer4.Templates
+ sıfırdan Template kurulum komutu: kurulacak klasörün içine gir cmd yap sonra bu komutu yaz dotnet new is4aspid -n IdentityAPI.AuthServer
+
+ PostMan yedeği=Bu klasörün içindeki IdentityServer.postman_collection.json adlı dosya
+
+ ***Benim işime yarayan 5. Bölüm 26. videodan başlıyor. Merkezi üyelik sistemi.
+ *** 28. video genel hataları anlatıyor.
+
+ secret key gizleme yöntemi:https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce
+
+ *** https Sertifika hatasını düzeltmek için cmd içine
+ dotnet dev-certs https --clean
+ dotnet dev-certs https
+ dotnet dev-certs https --trust
+
+
+ **************************************************************************
+ HttpContex ile viewdeki Contex aynı şeydir.
+**************************************************************************
+OpenId Connect = kullanıcı adı login işlemi (kimlik) Authentication
+OAuth 2.0 = kullanıcı dönüş bilgileri (yetkileri) Authorization
+
+Resource Server=Bizim Apiler
+Resource Owner=Son kullanıcı
+Client=web projeleri (Angula, React vs..)
+
+Client-Id=Sitenin kullanıcı adı
+Cilent-Secret=Sitenin kullanıcı şifresi
+
+İzin Tipleri
+en önemlisi**Client credentials grant=site identityden token istiyor. bu user ile ilgili değil. Siteyle ilgili. Siteye için token ver.
+Client credentials--- ApiResource= hangi API lerle sorumlu olduğu.API leri tanıtıyor
+Client credentials--- ApiScope=Yetki alanına sahip(okuma izni vs...)
+
+**************************************************************************
+ile migration işlemi yapabilirsin
+update-database -c PersistedGrantDbContext
+update-database -c ConfigurationDbContext
+-oluşturmaları şöyle oldu
+add-migration Initial -c PersistedDbContext
+add-migration Initial -c ConfigurationDbContext
+
+1 AuthServer den ilk Config.cs ile başladık.
+
+
+**************************************************************************
+using(){} ve program.cs sadece bir kere çalıştırılır.
+
+**************************************************************************
+
+Token almak için POST
+http://localhost:5000/connect/token
+Body - x-www-form
+client_id - Client1
+client_secret - secret
+grant_type - client_credentials
+
+**** client_credentials da refresh token kullanamazsın!!!!!! ****
+
+
+*** Gelen token ***
+eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjY4OTgyODEsImV4cCI6MTY2NjkwMTg4MSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MDAwIiwiYXVkIjoicmVzb3VyY2VfYXBpMSIsImNsaWVudF9pZCI6IkNsaWVudDEiLCJqdGkiOiIyNzc2NTY1RDUwM0I4MDFGQjQ1QjFFRTIyOTg2ODlDMSIsImlhdCI6MTY2Njg5ODI4MSwic2NvcGUiOlsiYXBpMS5yZWFkIl19.z6Om2qjg7HUCxW-jZlAPDP0wmBVNGXdKKqcaCsTQCUVRF3C7k4djp4WQdiVg6fEKTagYbyote7p8grUkjvMoogV3h7s4UKry-FMpe0h0CLsZiaIPEwc4fwW_HiQXrY5tk1L96la1CXZd0yu40jlUpFqDfDA_VXvvQSRJ1zkM1G5iYHPIvE6L3W3qGpvp4vNvysqZ83EZATZ5gWQUgkXMvbMP98MR1J-6WTIBCcDjpboHtrrTDXc9cDu4fRozZJjazYIKm_BhQGe1QYrU0a2ZuJdVyLJO8bBtTlC8pbGBRoNBpBUb8hcyVcWgAaDB2h-vQrWWlyXMzuvdWM-FGYQLvw
+https://jwt.io/ adresinden bunun içine açtığımızda
+
+{
+  "nbf": 1666898281,                        -----
+  "exp": 1666901881,                        ----- Token sonlanma süresi yani şuanki değer 1 saat Exp ömrü access ömründen daha uzundur
+  "iss": "http://localhost:5000",
+  "aud": "resource_api1",                   ----- Bu token bu API ye istek yapabilir. Metodun üstünde sadece [Authorize] varsa bu bölümle istek yapabilirim aynı zamanda api1.read scobundan hangi yetkiye sahip olduğunu öğrenebiliyoruz
+  "client_id": "Client1",
+  "jti": "2776565D503B801FB45B1EE2298689C1",----- Otomatik olarak üretilmiş bir id numarası
+  "iat": 1666898281,
+  "scope": [                                -----   
+    "api1.read"                             -----
+  ]
+}
+
+**************************************************************************
+Önemli!!! HttpContext i normalde bir controller içinden erişebiliyoruz. Ancak dışarıdan herhangi bir yerden erişmek istiyorsak HttpContextAccessor kullanmalıyız!!!!!
+
+**************************************************************************
+401=token ile authorize olmadın
+403=token geliyor authorize oluyorsun ancak bu methodu çalıştıracak yetkin yok.
+
+public key in başkasını çalmasınan hiç bir anlamı yok. private key önemli.
+
+
+**************************************************************************
+DISCORVERY ENDPOINT=identity serverle beraberinde ayağa kalkan bir endpoint tir.istek yapmak istiyorum URL burdan öğrenebiliryorsun. Scope ve diğer bazı bilgileri dış dünyaya sunmuş oluyor. Buryaa istek yaparak bilgi sahibi olabiliriz.
+postman ile yapılacak istek : GET https://localhost:5001/.well-known/openid-configuration
+gelen datalar içinde 
+   "jwks_uri": "https://localhost:5001/.well-known/openid-configuration/jwks",
+bizim için önemli burdanda 
+https://localhost:5001/.well-known/openid-configuration/jwks 
+adresine postman ile istek atarsan bazı bilgileri verir. hangi şifreleme vs...
+*** Discovery end point tüm var olan enpointlerin adreslerini veriyor...
+
+INTROSPECTION ENDPOINT=Elinde bir token var acaba bu tokenin ilgili API için yetkisi varmı yokmu kontrolü 
+postman ile yapılacak istek : POST GET https://localhost:5001/connect/instrospect
+Authorization kısmını BaseAut seç ve UserName=resource_api1 Password=secretapi1 yap
+body kısmında x-www ye token yaz ve karşısına tokeni ekle
+
+istek yaparken API nin userName ve Password ister...
+config.cs içindeki 19.satırdaki new ApiResource("resource_api1"){//ismini biz verdik
+burdaki resource_api1 bizim userName
+21.satırdaki ApiSecrets = new []{new  Secret("secretapi1".Sha256())}
+burdaki secretapi1 bizim Password
+postmanda
+
+**************************************************************************
+
+IdentityServer içindeki tempkey.jwk
+startup içindeki services.AddIdentityServrver() içindeki 33.satırdaki .AddDeveloperSigningCredential();
+private ve public keyler burda oluşuyor.
+
+
+
+
+**************************************************************************
+
+client crident 17 derste takıldım. Client credentials grant proje uygulaması 6. kısım
+
+**************************************************************************
+
+OAuth 2.0 Grants ( OAuth flow)
+açıklayıcı şeması dökümanı:https://www.rfc-editor.org/rfc/rfc6749#section-1.3.1
+1-Authorization code grant=Gelen kullanıcın kimlik bilgileri doğru artık sen burdan token alabilirsin.Burda iki kere servere gider. birincisi userName Password kontrolü sonrası Authorization code  döner ve o kod ile bir daha döner ve sonra ikinci dönüş sonucunda access token verir.***Bir çok client uygulaman varsa tek bir login ekranı olur ve ordan beslenir.
+2-Implicit grant=Authorization farkı identity serverden farkı iki kere gidip gelmez.daha çok tercih edilir. Fronted uygulamaları için daha uygundur.Mobil ve Angular uygulamalarında daha çok tercih edilir.
+3-***Resource owner credentials grant=*** En çok tercih edilen. senin web ve mobil güvenli ve sen geliştiriyorsan. Authorization server senin kontrolündeyse, Atuhorization code ve Implicit grant akış tipi istenmeyen sistem. Web ve mobil de login sayfası oluşturulur, giriş yap dediğinde arka planda o işlemler yapılır kullanıcı bunu anlamaz. yani identity gider kontrol eder token verir vs...*** tek clientin varsa bunu kullanmalısın. çok client yaparsan hepsinde ayrı ayrı login olma işlemi olacak oda sıkıntı.
+4-Client credentials grant=burda en önemlisi userName ve Password dan gerek yok. sitenin kendine özel bir client ve secreti vardır. identity buna izin verir, erişebilirsin, erişemezsin, erişince yetkin şudur, şunları yapabilirsini vs... gibi.
+
+**************************************************************************
+Identity server hızlı LOGİN sayfası yapmak için
+identiyserver controller içindeki defaul Home u sil.
+adres:https://github.com/IdentityServer/IdentityServer4.Quickstart.UI
+iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/main/getmain.ps1'))
+yukarıdaki komutu identity server sağ  tıkla open folder ile neredeyse o klasörün olduğu yere aç
+Quickstart veya UI diye bir klasör var sil.
+adres çubuğunda adresi kopyala
+powershell aç. adresi yapıştır ve kök klasörü aç
+iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/IdentityServer/IdentityServer4.Quickstart.UI/main/getmain.ps1'))
+yukarıdaki komutu yapıştır. ve otomatik olarak içine Quickstart adında bir klasör oluşturdu.
+eğer doğru çalışıyorsa.
+localhost:5001 de 
+Welcome to IdentityServer4 (version 4.1.0)
+gelmesi gerekiyor.
+oradan 
+Click here to see the claims for your current session. tıklarsan login ekranına götürür
+**login olduktan sonra f12 ile cookie içinde girdiğinde asıl cookie idsrv olan satırdır.
+açılan sayfada Claims kısmında
+**beni hatırla dersen 1 aylık bir cookie oluşturur. Eğer onu tıklamazsan ozaman session bazlı bir cookie olurdu.
+amr =akışı temsil ediyor. pwd=Resource owner credentials (Password)
+atuh_time=Authentation süresini vermiş.
+Properties tarafında
+expires=bitiş tarihi
+session_id =otomatik olarak oluşan session id sini vermiş.
+issued=oluşturulma tarihi
+
+**************************************************************************
+***YENİ BİR PROJE EKLEMEK İÇİN YAPILACAK ADIMLAR
+-- Client2 de Nuget package den Microsoft.AspNetCore.Authentication.OpenIdConnect yükle
+-- Client1 deki startupdaki  ConfigureServices içindekileri koplaya, Client2 için içine yapıştır
+-- IdentityServer da config.cs içinde public static IEnumerable<Client> GetClients() içindeki 107. satırdaki new Client() tın aynısından alta bir tane daha yapıştır ve
+* CilentId sini değiştir.örn:ClientId = "Client2-Mvc",
+* ClientName="Client 2 app  mvc uygulaması", olarak Client 2 olarak değiştir
+* Cilent2 hangi portta çalışıyorsa onu ayarla Örn:RedirectUris=new  List<string>{ "https://localhost:5011/signin-oidc" }, 
+* Client2 yede aynı porta ayarla Örn:PostLogoutRedirectUris=new List<string>{ "https://localhost:5011/signout-callback-oidc" },
+* Client2 AllowedScopes da "api1.read","api2.read" vererek iki apiyede erişim verebilirsin.
+-- startup içindeki public void Configure içinde app.UseAuthorization(); üst satırına!!! app.UseAuthentication(); ekle
+-- Home Controller de mesela public IActionResult User() üzerine [Authorize] ekle
+-- Kontrol için. boş bir view oluştur User için mesela.
+-- localhost:5011/home/user yaptığında eğer login olmamışsan seni login sayfasına yani identity sayfasına yönlendirecektir.
+
+*********************CUSTOM MERKEZİ ÜYELİK İÇİN SQL SERVER YEDEĞİ*********
+USE [master]
+GO
+/****** Object:  Database [IdentityServer]    Script Date: 05/11/2022 14:35:02 ******/
+CREATE DATABASE [IdentityServer]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'IdentityServer', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\IdentityServer.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'IdentityServer_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\IdentityServer_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+GO
+ALTER DATABASE [IdentityServer] SET COMPATIBILITY_LEVEL = 140
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [IdentityServer].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [IdentityServer] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [IdentityServer] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [IdentityServer] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [IdentityServer] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [IdentityServer] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [IdentityServer] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [IdentityServer] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [IdentityServer] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [IdentityServer] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [IdentityServer] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [IdentityServer] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [IdentityServer] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [IdentityServer] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [IdentityServer] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [IdentityServer] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [IdentityServer] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [IdentityServer] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [IdentityServer] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [IdentityServer] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [IdentityServer] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [IdentityServer] SET READ_COMMITTED_SNAPSHOT ON 
+GO
+ALTER DATABASE [IdentityServer] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [IdentityServer] SET RECOVERY FULL 
+GO
+ALTER DATABASE [IdentityServer] SET  MULTI_USER 
+GO
+ALTER DATABASE [IdentityServer] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [IdentityServer] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [IdentityServer] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [IdentityServer] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [IdentityServer] SET DELAYED_DURABILITY = DISABLED 
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'IdentityServer', N'ON'
+GO
+ALTER DATABASE [IdentityServer] SET QUERY_STORE = OFF
+GO
+USE [IdentityServer]
+GO
+/****** Object:  Table [dbo].[__EFMigrationsHistory]    Script Date: 05/11/2022 14:35:02 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[__EFMigrationsHistory](
+	[MigrationId] [nvarchar](150) NOT NULL,
+	[ProductVersion] [nvarchar](32) NOT NULL,
+ CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY CLUSTERED 
+(
+	[MigrationId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CustomUsers]    Script Date: 05/11/2022 14:35:02 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CustomUsers](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserName] [nvarchar](max) NULL,
+	[Email] [nvarchar](max) NULL,
+	[Password] [nvarchar](max) NULL,
+	[City] [nvarchar](max) NULL,
+ CONSTRAINT [PK_CustomUsers] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+INSERT [dbo].[__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES (N'20221103195630_Initial', N'3.1.30')
+GO
+SET IDENTITY_INSERT [dbo].[CustomUsers] ON 
+GO
+INSERT [dbo].[CustomUsers] ([Id], [UserName], [Email], [Password], [City]) VALUES (1, N'caran', N'cuneytaran@gmail.com', N'12345', N'İstanbul')
+GO
+INSERT [dbo].[CustomUsers] ([Id], [UserName], [Email], [Password], [City]) VALUES (2, N'caran2', N'mehmetaran@gmail.com', N'12345', N'Konya')
+GO
+INSERT [dbo].[CustomUsers] ([Id], [UserName], [Email], [Password], [City]) VALUES (3, N'caran3', N'cemilaran@gmail.com', N'12345', N'İzmir')
+GO
+SET IDENTITY_INSERT [dbo].[CustomUsers] OFF
+GO
+USE [master]
+GO
+ALTER DATABASE [IdentityServer] SET  READ_WRITE 
+GO
+
+**************************************************************************
+POSTMAN YEDEĞİ = IdentityServer.postman_collection.json
+İÇİNE AŞAĞIDAKİNİ EKLE VE POSTMAN DEN GERİ YÜKLEME YAPABİLİRSİN
+{
+	"info": {
+		"_postman_id": "2ad9c1ed-fb43-4ac4-9c4d-a5e56f22256e",
+		"name": "IdentityServer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "https://localhost:5001/connect/token",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "Client1",
+							"type": "default"
+						},
+						{
+							"key": "client_secret",
+							"value": "secret",
+							"type": "default"
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "default"
+						}
+					]
+				},
+				"url": "https://localhost:5001/connect/token"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5015/api/products/getproducts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": {
+						"headerPrefix": "Bearer",
+						"addTokenTo": "header"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjY5ODUwNzcsImV4cCI6MTY2Njk4ODY3NywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MDAwIiwiYXVkIjoicmVzb3VyY2VfYXBpMSIsImNsaWVudF9pZCI6IkNsaWVudDEiLCJqdGkiOiJBQ0QwMzQwRkVEOUI0NjExMEVFRTEyRkY2NTc2NEQyRCIsImlhdCI6MTY2Njk4NTA3Nywic2NvcGUiOlsiYXBpMS5yZWFkIl19.yPlkf6jWM-6hTNljemKRsXEpaUExHrq4uHkpHJnKEOJryoosfQwd6plC3ZJZ8aqNn1EmpC6tQ8BASwizjwmp7YhBHQiX01Ww2v_Ip_q5Tp0H0Et_jB4O0uALNJ7ae8IG5AwSzQFkVrdv_m6tnViH_bwsv0xgM2SX0tkXXvPprci_qDr-fH_PFTbkPkcamTXCdZv2sVyTnYxLIG8SP-lfdW5JsHjbHHC8_BI2NPr0fgUJozyRIE2j3uLRZ8NHuChJfB1yrSkIR47WfgFw4XKMKC6OAPHXy3ZFt3jXHxMdjlBwRh0_zwnYk3ZviwsrnjzYMrVjWPH4BKcxh_1VDdiIvA",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "Client1",
+							"type": "default",
+							"disabled": true
+						},
+						{
+							"key": "client_secret",
+							"value": "secret",
+							"type": "default",
+							"disabled": true
+						},
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "default",
+							"disabled": true
+						}
+					]
+				},
+				"url": "https://localhost:5016/api/products/getproducts"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5020/api/pictures/getpictures",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://localhost:5020/api/pictures/getpictures"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5001/.well-known/openid-configuration",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://localhost:5001/.well-known/openid-configuration"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5001/connect/introspect",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "secretapi1",
+						"username": "resource_api1"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjcwNTY2NzAsImV4cCI6MTY2NzA2MDI3MCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSIsImF1ZCI6InJlc291cmNlX2FwaTEiLCJjbGllbnRfaWQiOiJDbGllbnQxIiwianRpIjoiQ0VBRTMwNTM4NTc4NjI2QTVGMTEyOEJCMEQ4RjAzMzQiLCJpYXQiOjE2NjcwNTY2NzAsInNjb3BlIjpbImFwaTEucmVhZCJdfQ.LoilrdRY7eKm-Stt-yl_h_uNcIEXfOoeByzpulq1yVT_NDGJjsYbAh-o16M32wZNSWtQGp-pGt59w-VeGhyINyQ5hn6YfiQ7CHLGMJ87ajR9kOwoidhmRdAf5MqHbw1Qx6RmhJVy2Q9zQ3A9Il-DF9rQS2OxQUBkSYSljIna4cJ5hT35e3k_q1FGUFsf8y1IUwneh9HA1QeBgYSguPE7_h004aAhd5FcPXyKQwBB7vpn6H4Jxnvn8T1V9-a7-B6agMGidJ_TRjUYSZLBl_kPpsPP2a4ooU0rhwnUlQaIU5D8drROrEI1uSVHDaDQ-zlmH3HdZpUYaJ4sctDAGiZqrg",
+							"type": "default"
+						}
+					]
+				},
+				"url": "https://localhost:5001/connect/introspect"
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:5001/connect/userinfo",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": {
+						"redirect_uri": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjcxMjI4ODcsImV4cCI6MTY2NzEyNjQ4NywiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSIsImF1ZCI6InJlc291cmNlX2FwaTEiLCJjbGllbnRfaWQiOiJDbGllbnQxIiwianRpIjoiM0JEMEYxODY3MEVDOUZGQUVENzk1MzM4OTRCMzA0OEMiLCJpYXQiOjE2NjcxMjI4ODcsInNjb3BlIjpbImFwaTEucmVhZCJdfQ.H7N5uwh1DLPAbHWiCAtuNmAficqrz-MFSMBwRAzPTKUqVzrS-yoanhzrlSJq3pG374ACuxVZvfL4sVWq7cpSldXpqoLwlXbwY0QNCNGFdhJzjAsbBxwfaSamK7S85U_rPu_Wl30j2NM2VKRV3XH-8U8CSgRHPeq-m7YnkmHI6LTC86shi5UgnZmRyQCodreDMK3AsBLuvxAfOzUIUU5U4H3iPW9pQLIpvdnj2bplqOV7xSvJ3hXEZa4I12dUEQ7ZsYYFtt8XA1Ty6qUX9t8O3LgCr8lZIY8zcHhYhOpcsUlfRYnTO8n3kfj2PYk0nFg8L177A8mqg14lpbd4EioeZQ",
+						"headerPrefix": "Bearer",
+						"addTokenTo": "header"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "https://localhost:5001/connect/userinfo"
+			},
+			"response": []
+		}
+	]
+}
