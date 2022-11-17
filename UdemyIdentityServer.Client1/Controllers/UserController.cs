@@ -15,7 +15,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace UdemyIdentityServer.Client1.Controllers
 {
-    [Authorize]//sadec üye olanlar girebilecek
+    [Authorize]//sadece üye olanlar girebilecek
     public class UserController : Controller
     {
         //http://5001.../user olarak girdiğinde seni merkezi logine yönlendirir ve tekrar geri döner.

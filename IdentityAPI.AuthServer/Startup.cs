@@ -69,7 +69,7 @@ namespace IdentityAPI.AuthServer
                     options.ClientSecret = "copy client secret from Google here";//client secreti buraya yapıştırıyorsun                   
                 });
 
-            services.AddLocalApiAuthentication();//identity server artık API gibi davranacak, ve dışara endpoint açacak ama mutlaka token ile erişebilsin.Controllerde [Authorize(LocalApi.PolicyName)] deki PolicyName burdan alıyor.
+            services.AddLocalApiAuthentication();//identity server artık API gibi davranacak, ve dışara endpoint açacak ama mutlaka token ile erişebilsin.Controllerde [Authorize(LocalApi.PolicyName)] deki PolicyName ve authanticate işlemi  burdan alıyor.
             services.AddControllersWithViews();//normal controller tanımlanmış
         }
 
@@ -85,6 +85,7 @@ namespace IdentityAPI.AuthServer
 
             app.UseRouting();
             app.UseIdentityServer();
+            //app.UseAuthentication();//önce kimlik doğrulama yapılır. bu yoktu diğer videodan gördüm. hata verirse sil.
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

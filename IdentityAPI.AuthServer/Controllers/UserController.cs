@@ -9,7 +9,7 @@ using static IdentityServer4.IdentityServerConstants;
 namespace IdentityAPI.AuthServer.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [Authorize(LocalApi.PolicyName)]//yetkilendirme tanımladık.....
+    [Authorize(LocalApi.PolicyName)]//yetkilendirme ile birlikte Policy tanımladık.....startup içindeki services.AddLocalApiAuthentication(); buraya kontrol ediyor. Gelen tokenin scope içinde "IdentityServerApi" yazısını bekliyor.
     [ApiController]
     public class UserController : ControllerBase
     {

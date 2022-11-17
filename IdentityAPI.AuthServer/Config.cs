@@ -14,11 +14,11 @@ namespace IdentityAPI.AuthServer
     public static class Config
     {
         //packet yöneticisinden IdentityServer4 yükle.
-        public static IEnumerable<ApiResource> GetApiResources()//ApiResource identityserver tanıyor
+        public static IEnumerable<ApiResource> GetApiResources()//ApiResource identityserver tanıyor. Audis lere karşılık geliyor.
         {
             return new List<ApiResource>()//1.API yi tanımlıyoruz.
             {
-                new ApiResource("resource_api1"){//ismini biz verdik
+                new ApiResource("resource_api1"){//ismini biz verdik.apinin tanıtıyoruz ve izin tanımlaması yapıyoruz.
                     Scopes={ "api1.read","api1.write","api1.update" },//tanımlanmış yetkileri atıyoruz (oku,yazma,güncelleme).//INTROSPECTION ENDPOINT için API nin userName= resource_api1 
                     ApiSecrets = new []{new  Secret("secretapi1".Sha256())}//INTROSPECTION ENDPOINT için API nin Password=secretapi1
                 },
@@ -28,7 +28,8 @@ namespace IdentityAPI.AuthServer
                        Scopes={ "api2.read","api2.write","api2.update" },//INTROSPECTION ENDPOINT için API nin userName= resource_api2 
                        ApiSecrets = new []{new  Secret("secretapi2".Sha256()) }//INTROSPECTION ENDPOINT için API nin Password=secretapi2
                 },
-                new ApiResource(IdentityServerConstants.LocalApi.ScopeName)
+
+                new ApiResource(IdentityServerConstants.LocalApi.ScopeName)//IdentityServer tanımlıyoruz.
             };
         }
 
@@ -43,7 +44,8 @@ namespace IdentityAPI.AuthServer
                 new ApiScope("api2.read"    ,"API 2 için okuma izni"),
                 new ApiScope("api2.write"   ,"API 2 için yazma izni"),
                 new ApiScope("api2.update"  ,"API 2 için güncelleme izni"),
-                new ApiScope(IdentityServerConstants.LocalApi.ScopeName)//identity server için tanımladık
+
+                new ApiScope(IdentityServerConstants.LocalApi.ScopeName)//identity server için tanımladık. Aslında içine "IdentityServerApi" sabiti yazmış olduk.
             };
         }
 
@@ -64,14 +66,14 @@ namespace IdentityAPI.AuthServer
         public static IEnumerable<Client> GetClients()//Yukarıdaki API lere hangi clientler kullanacak 15 ve 32. satırlardan bahsediyorum
         {
             return new List<Client>(){//Client = identityserver üzerinden geliyor.
-
+                //POSTMAN İLE İSTEK YAPARKEN BURDAKİ BİLGİLERİ EKLİYORUZ alacağı parametreleri https://identityserver4.readthedocs.io/en/latest/endpoints/token.html buradan alabilirsin.
                  new Client()//BU CLIENTLE ÇIKIŞ YAPARSAN SADECE API1 ERİŞEBİLİRSİN
                 {
                    ClientId = "Client1",//sitenin ClientId si olacak bunu kullanıcının username gibi düşünebilirsin
                    ClientName="Client 1 app uygulaması",//kullanıcının API den data almak için işimize yarayacak.
                    ClientSecrets=new[] {new Secret("secret".Sha256())},//şifre secret olarak belirledik. ve bunu şifreledik.yani hash ledik.datayı appsettings den almak daha doğru olur.
-                   AllowedGrantTypes= GrantTypes.ClientCredentials,//ClientCredentials= bu akışa uygun token verecek. Akış tipini seçtik.bir çok tipler var. Ençok kullanılan bu tipdir.
-                   AllowedScopes= {"api1.read"}////erişim tanımlandığı yer.Hangi API den nasıl bir yetki ye erişmek isteyeceğimizi belirliyoruz. 
+                   AllowedGrantTypes= GrantTypes.ClientCredentials,//ClientCredentials= bu akışa uygun token verecek. Akış tipini seçtik.bir çok tipler var. Ençok kullanılan bu tipdir.identityserver ile api arasında balantı yapıyor site bazında. ClientCredentialda refresh token olmaz!!!!
+                   AllowedScopes= {"api1.read"}//erişim tanımlandığı yer.Hangi API ler bana istek yapabilir. Yani birden fazla API tanımlayabiliriz.Hangi API den nasıl bir yetki ye erişmek isteyeceğimizi belirliyoruz. 
                 },
                  new Client()//BU CLIENTLE ÇIKIŞ YAPARSAN API1 ve API2 YE ERİŞEBİLİRSİN
                 {

@@ -21,6 +21,8 @@
  dotnet dev-certs https
  dotnet dev-certs https --trust
 
+ *** postmandeki isteklerdeki aut= hangi apilerden istek yapabilirim gösteriyor.scope=ise istek yaptığın API lerin sahip olduğu izinleri yetkileri gösterir. exp=token ömrünü saniye cinsinde gösterir.
+
 
  **************************************************************************
  HttpContex ile viewdeki Contex aynı şeydir.
