@@ -17,6 +17,7 @@ namespace UdemyIdentityServer.API2.Controllers
     public class PicturesController : ControllerBase
     {
         [Authorize]
+        [HttpGet]
         public IActionResult GetPictures()
         {
             var pictures = new List<Picture>() {
