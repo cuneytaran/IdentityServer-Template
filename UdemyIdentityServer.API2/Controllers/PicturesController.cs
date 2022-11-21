@@ -16,7 +16,7 @@ namespace UdemyIdentityServer.API2.Controllers
     [ApiController]
     public class PicturesController : ControllerBase
     {
-        [Authorize]
+        [Authorize(Policy = "ReadPicture")]//UpdateOrCreate=Policy ile UpdateOrCreate şartını sağlaması lazım bu şart ise startupdaki 58. satırdan bahsediyor. aynısını karışlıyorsa yapacak.Bu şartı sağlarsa bu metodu ulaşacak.Tokenin gelemesi yeterli değil, aynı zamanda scobunda ilgili authorize ne ise oda olması gerekiyor. 
         [HttpGet]
         public IActionResult GetPictures()
         {

@@ -81,7 +81,7 @@ namespace IdentityAPI.AuthServer
                    ClientName="Client 2 app uygulaması",
                    ClientSecrets=new[] {new Secret("secret".Sha256())},
                    AllowedGrantTypes= GrantTypes.ClientCredentials,
-                   AllowedScopes= {"api1.read" ,"api1.update","api2.write","api2.update"}//erişim tanımlandığı yer
+                   AllowedScopes= {"api2.read"}//erişim tanımlandığı yer AllowedScopes= {"api2.read" ,"api1.update","api2.read","api2.write","api2.update"}
                 },
                  new Client()
                  {
@@ -119,7 +119,7 @@ namespace IdentityAPI.AuthServer
                    AllowedScopes = {
                          IdentityServerConstants.StandardScopes.Email,
                          IdentityServerConstants.StandardScopes.OpenId, 
-                         IdentityServerConstants.StandardScopes.Profile, "api1.read","api2.read",
+                         IdentityServerConstants.StandardScopes.Profile, "api2.read",//IdentityServerConstants.StandardScopes.Profile, "api1.read","api2.read",
                          IdentityServerConstants.StandardScopes.OfflineAccess,"CountryAndCity","Roles"
 
                      },//"CountryAndCity","Roles"=token içinde country ve rollerde görünecek
@@ -128,7 +128,6 @@ namespace IdentityAPI.AuthServer
                    RefreshTokenUsage=TokenUsage.ReUse,
                    RefreshTokenExpiration=TokenExpiration.Absolute,
                    AbsoluteRefreshTokenLifetime=(int) (DateTime.Now.AddDays(60)-DateTime.Now).TotalSeconds,
-
                    RequireConsent=false
         },
                  new Client()//Angular projesi için

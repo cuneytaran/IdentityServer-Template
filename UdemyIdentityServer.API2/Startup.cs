@@ -42,6 +42,24 @@ namespace UdemyIdentityServer.API2
                 opts.Authority = "https://localhost:5001";//jwt token yani acces token yayınlayan yani yetki kim adresi.yani (identityserver adresi). Buruya bir token geldiğinde bu API gidecek bu adresten public key alacak. idenditity deki private key ile doğrulayacak. kilit anahtar ilişki sayesinde.
                 opts.Audience = "resource_api2";//Benden data alacak kişide mutlaka ismi olmalı. yani jwt içindeki aut daki bilgi. Bana bir token gelidiğinde mutlaka aut alanındaki isimle aynı olmalı.resource_api2 bunu identiyserver projesinin içinde config.cs dosyasının içinde tanımladık.
             });
+
+            //kimliği doğrulanmış bir kullanıcının yetkilendirmesi yapılıyor
+            services.AddAuthorization(opts =>
+            {
+                //policy=koşul, şartname
+                opts.AddPolicy("ReadPicture", policy =>
+                {
+                    //token içindeki scope içindeki api1 olanı için sadece okuma iznini ver
+                    policy.RequireClaim("scope", "api2.read"); //ilgili action methot mutlaka scope dunda api1.read bir data bekleyecek
+                });
+
+                opts.AddPolicy("UpdateOrCreate", policy =>
+                {
+                    //token içindeki scope içindeki api1 olanı için update ve create iznini ver
+                    policy.RequireClaim("scope", new[] { "api2.update", "api2.create" });//ilgili action methot mutlaka scope dunda ya api1.update yada api1.create bir data bekleyecek
+                });
+            });
+
             services.AddControllers();
 
             //swagger eklentisi

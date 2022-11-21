@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using UdemyIdentityServer.Client2.Services;
 
 namespace UdemyIdentityServer.Client2
 {
@@ -21,6 +22,8 @@ namespace UdemyIdentityServer.Client2
         public void ConfigureServices(IServiceCollection services)
         {
             IdentityModelEventSource.ShowPII = true;
+            services.AddHttpContextAccessor();
+            services.AddScoped<IApiResourceHttpClient, ApiResourceHttpClient>();
 
             services.AddAuthentication(opts =>
             {
@@ -38,17 +41,19 @@ namespace UdemyIdentityServer.Client2
                 opts.ResponseType = "code id_token";
                 opts.GetClaimsFromUserInfoEndpoint = true;
                 opts.SaveTokens = true;
-                opts.Scope.Add("api1.read");
+                opts.Scope.Add("api2.read");
                 opts.Scope.Add("offline_access");
                 opts.Scope.Add("CountryAndCity");
                 opts.Scope.Add("Roles");
+                opts.Scope.Add("email");
                 opts.ClaimActions.MapUniqueJsonKey("country", "country");
                 opts.ClaimActions.MapUniqueJsonKey("city", "city");
                 opts.ClaimActions.MapUniqueJsonKey("role", "role");
 
                 opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                 {
-                    RoleClaimType = "role"
+                    RoleClaimType = "role",
+                    NameClaimType = "name"
                 };
             });
 

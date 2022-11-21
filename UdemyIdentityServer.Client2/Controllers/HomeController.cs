@@ -25,14 +25,21 @@ namespace UdemyIdentityServer.Client2.Controllers
             return View();
         }
 
-        [Authorize]
-        public IActionResult User()
+        //[Authorize]
+        //public IActionResult User()
+        //{
+        //    return View();
+        //}
+
+        public IActionResult Privacy()
         {
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult AccessDenied(string ReturnUrl)//yekisiz kullanıcı sayfaya ulaşmaya çalıştığında buraya yönlendirilecek.
         {
+            ViewBag.url = ReturnUrl;//ReturnUrl=hangi sayfaya erişemiyorsa buraya o adres geliyor.
+
             return View();
         }
 
