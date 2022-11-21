@@ -124,6 +124,7 @@ namespace UdemyIdentityServer.API1
                 endpoints.MapControllers();
             });
 
+            //swagger eklentisi
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
