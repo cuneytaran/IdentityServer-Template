@@ -164,6 +164,7 @@ namespace IdentityServerHost.Quickstart.UI
                 // if the request for logout was properly authenticated from IdentityServer, then
                 // we don't need to show the prompt and can just log the user out directly.
                 return await Logout(vm);
+                //eğer logout geldiği adrese seni yönlendirmiyorsa return Redirect(vm.PostLogoutRedirectUri); bunu kullanabilirsin. Ancak AccountOption kısmında ayar yaparsan buna gerek kalmaz. otomatik olarak logout olduğunda geldiğin adrese seni yönlendirir.
             }
 
             return View(vm);

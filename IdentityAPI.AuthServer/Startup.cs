@@ -19,6 +19,7 @@ namespace IdentityAPI.AuthServer
     public class Startup
     {
         public IWebHostEnvironment Environment { get; }
+
         public IConfiguration Configuration { get; }
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
@@ -30,8 +31,8 @@ namespace IdentityAPI.AuthServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));//ApplicationDbContext=ApplicationUser entitytisine temsil ediyor. buradaki UseSqlServer,UseSqlLite,MySql vs... istediğini tanımlayabilirsin.
-           
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));//ApplicationDbContext=ApplicationUser User entitytisine temsil ediyor. buradaki UseSqlServer,UseSqlLite,MySql vs... istediğini tanımlayabilirsin.
+
             services.AddIdentity<ApplicationUser, IdentityRole>()//identity serverve identity API sini eklemiş.IdentityRole identity API den gelen role dür. NASILKİ ApplicationUser MODELDEKİ ApplicationUser dan miras alıyorsa sende rolleri genişletmek istiyorsan sende modele bir tane oluşturup miras aldırtarak rolleri genişletebilirsin.
                 .AddEntityFrameworkStores<ApplicationDbContext>()//Entity Framework Core kullanacağımızı belirttik
                 .AddDefaultTokenProviders();//Identitiy üyelik sistemin şifre sıfırlamak için kullanılan token provider dir. 

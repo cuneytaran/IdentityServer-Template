@@ -12,8 +12,8 @@ namespace IdentityServerHost.Quickstart.UI
         public static bool AllowRememberLogin = true;
         public static TimeSpan RememberMeLoginDuration = TimeSpan.FromDays(30);
 
-        public static bool ShowLogoutPrompt = true;
-        public static bool AutomaticRedirectAfterSignOut = false;
+        public static bool ShowLogoutPrompt = false;//logout olduğunda geldiği adrese yönlemesi için false yaptık.
+        public static bool AutomaticRedirectAfterSignOut = true;//otomatik geldiği adrese yönlenmesin. false identity sayfasında geldiğiniz yere gitmek isterseniz tıklayın gibi mesaj veriyor.
 
         public static string InvalidCredentialsErrorMessage = "Invalid username or password";
     }
