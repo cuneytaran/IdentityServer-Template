@@ -44,6 +44,7 @@ namespace UdemyIdentityServer.API2
             });
             services.AddControllers();
 
+            //swagger eklentisi
             services.AddSwaggerGen();
             services.AddSwaggerGen(c =>
             {
@@ -53,7 +54,26 @@ namespace UdemyIdentityServer.API2
                     Title = "Implement Swagger UI",
                     Description = "A simple example to Implement Swagger UI",
                 });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Please write a token into the filed. Example:\"Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                { new OpenApiSecurityScheme {
+                    Reference = new OpenApiReference {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                    Array.Empty<string>()
+                    }
+                });
             });
+
+
         }
 
         
@@ -76,10 +96,14 @@ namespace UdemyIdentityServer.API2
                 endpoints.MapControllers();
             });
 
+            //swagger eklentisi
             app.UseSwagger();
-            app.UseSwaggerUI(c => {
+            app.UseSwaggerUI(c =>
+            {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Showing API V1");
             });
+
+
         }
     }
 }
