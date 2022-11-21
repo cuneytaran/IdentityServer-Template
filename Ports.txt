@@ -316,13 +316,13 @@ POSTMAN YEDEĞİ = IdentityServer.postman_collection.json
 İÇİNE AŞAĞIDAKİNİ EKLE VE POSTMAN DEN GERİ YÜKLEME YAPABİLİRSİN
 {
 	"info": {
-		"_postman_id": "2ad9c1ed-fb43-4ac4-9c4d-a5e56f22256e",
+		"_postman_id": "051d0ab5-20ff-4b6f-9c1e-73526355522e",
 		"name": "IdentityServer",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "https://localhost:5001/connect/token",
+			"name": "1-access token client_id ye göre",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -334,7 +334,7 @@ POSTMAN YEDEĞİ = IdentityServer.postman_collection.json
 					"urlencoded": [
 						{
 							"key": "client_id",
-							"value": "Client1",
+							"value": "Client2",
 							"type": "default"
 						},
 						{
@@ -354,7 +354,108 @@ POSTMAN YEDEĞİ = IdentityServer.postman_collection.json
 			"response": []
 		},
 		{
-			"name": "https://localhost:5015/api/products/getproducts",
+			"name": "2-tokenin içini gösterme",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": {
+						"password": "secretapi1",
+						"username": "resource_api1"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjcwNTY2NzAsImV4cCI6MTY2NzA2MDI3MCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSIsImF1ZCI6InJlc291cmNlX2FwaTEiLCJjbGllbnRfaWQiOiJDbGllbnQxIiwianRpIjoiQ0VBRTMwNTM4NTc4NjI2QTVGMTEyOEJCMEQ4RjAzMzQiLCJpYXQiOjE2NjcwNTY2NzAsInNjb3BlIjpbImFwaTEucmVhZCJdfQ.LoilrdRY7eKm-Stt-yl_h_uNcIEXfOoeByzpulq1yVT_NDGJjsYbAh-o16M32wZNSWtQGp-pGt59w-VeGhyINyQ5hn6YfiQ7CHLGMJ87ajR9kOwoidhmRdAf5MqHbw1Qx6RmhJVy2Q9zQ3A9Il-DF9rQS2OxQUBkSYSljIna4cJ5hT35e3k_q1FGUFsf8y1IUwneh9HA1QeBgYSguPE7_h004aAhd5FcPXyKQwBB7vpn6H4Jxnvn8T1V9-a7-B6agMGidJ_TRjUYSZLBl_kPpsPP2a4ooU0rhwnUlQaIU5D8drROrEI1uSVHDaDQ-zlmH3HdZpUYaJ4sctDAGiZqrg",
+							"type": "default"
+						}
+					]
+				},
+				"url": "https://localhost:5001/connect/introspect"
+			},
+			"response": []
+		},
+		{
+			"name": "identity Üye Kaydı",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": {
+						"addTokenTo": "header"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"UserName\":\"caran\",\r\n    \"Email\":\"cuneytaran@gmail.com\",\r\n    \"Password\":\"C@ran1525\",\r\n    \"City\":\"İstanbul\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://localhost:5001/api/user/signup"
+			},
+			"response": []
+		},
+		{
+			"name": "identity login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "Client1-ResourceOwner-Mvc",
+							"type": "default"
+						},
+						{
+							"key": "client_secret",
+							"value": "secret",
+							"type": "default"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "default"
+						},
+						{
+							"key": "username",
+							"value": "cuneytaran@gmail.com",
+							"type": "default"
+						},
+						{
+							"key": "password",
+							"value": "C@ran1525",
+							"type": "default"
+						}
+					]
+				},
+				"url": "https://localhost:5001/connect/token"
+			},
+			"response": []
+		},
+		{
+			"name": "kullanılan tüm servisler",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://localhost:5001/.well-known/openid-configuration"
+			},
+			"response": []
+		},
+		{
+			"name": "client1",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -403,7 +504,7 @@ POSTMAN YEDEĞİ = IdentityServer.postman_collection.json
 			"response": []
 		},
 		{
-			"name": "https://localhost:5020/api/pictures/getpictures",
+			"name": "client2",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -412,54 +513,36 @@ POSTMAN YEDEĞİ = IdentityServer.postman_collection.json
 			"response": []
 		},
 		{
-			"name": "https://localhost:5001/.well-known/openid-configuration",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "https://localhost:5001/.well-known/openid-configuration"
-			},
-			"response": []
-		},
-		{
-			"name": "https://localhost:5001/connect/introspect",
-			"request": {
-				"auth": {
-					"type": "basic",
-					"basic": {
-						"password": "secretapi1",
-						"username": "resource_api1"
-					}
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjcwNTY2NzAsImV4cCI6MTY2NzA2MDI3MCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSIsImF1ZCI6InJlc291cmNlX2FwaTEiLCJjbGllbnRfaWQiOiJDbGllbnQxIiwianRpIjoiQ0VBRTMwNTM4NTc4NjI2QTVGMTEyOEJCMEQ4RjAzMzQiLCJpYXQiOjE2NjcwNTY2NzAsInNjb3BlIjpbImFwaTEucmVhZCJdfQ.LoilrdRY7eKm-Stt-yl_h_uNcIEXfOoeByzpulq1yVT_NDGJjsYbAh-o16M32wZNSWtQGp-pGt59w-VeGhyINyQ5hn6YfiQ7CHLGMJ87ajR9kOwoidhmRdAf5MqHbw1Qx6RmhJVy2Q9zQ3A9Il-DF9rQS2OxQUBkSYSljIna4cJ5hT35e3k_q1FGUFsf8y1IUwneh9HA1QeBgYSguPE7_h004aAhd5FcPXyKQwBB7vpn6H4Jxnvn8T1V9-a7-B6agMGidJ_TRjUYSZLBl_kPpsPP2a4ooU0rhwnUlQaIU5D8drROrEI1uSVHDaDQ-zlmH3HdZpUYaJ4sctDAGiZqrg",
-							"type": "default"
-						}
-					]
-				},
-				"url": "https://localhost:5001/connect/introspect"
-			},
-			"response": []
-		},
-		{
-			"name": "https://localhost:5001/connect/userinfo",
+			"name": "api1",
 			"request": {
 				"auth": {
 					"type": "oauth2",
 					"oauth2": {
-						"redirect_uri": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjBENTQ3MzI1Q0JBOEEwMEQwREM3NzNFRUUwODdGQjAxIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2NjcxMjI4ODcsImV4cCI6MTY2NzEyNjQ4NywiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSIsImF1ZCI6InJlc291cmNlX2FwaTEiLCJjbGllbnRfaWQiOiJDbGllbnQxIiwianRpIjoiM0JEMEYxODY3MEVDOUZGQUVENzk1MzM4OTRCMzA0OEMiLCJpYXQiOjE2NjcxMjI4ODcsInNjb3BlIjpbImFwaTEucmVhZCJdfQ.H7N5uwh1DLPAbHWiCAtuNmAficqrz-MFSMBwRAzPTKUqVzrS-yoanhzrlSJq3pG374ACuxVZvfL4sVWq7cpSldXpqoLwlXbwY0QNCNGFdhJzjAsbBxwfaSamK7S85U_rPu_Wl30j2NM2VKRV3XH-8U8CSgRHPeq-m7YnkmHI6LTC86shi5UgnZmRyQCodreDMK3AsBLuvxAfOzUIUU5U4H3iPW9pQLIpvdnj2bplqOV7xSvJ3hXEZa4I12dUEQ7ZsYYFtt8XA1Ty6qUX9t8O3LgCr8lZIY8zcHhYhOpcsUlfRYnTO8n3kfj2PYk0nFg8L177A8mqg14lpbd4EioeZQ",
+						"redirect_uri": "",
 						"headerPrefix": "Bearer",
 						"addTokenTo": "header"
 					}
 				},
 				"method": "GET",
 				"header": [],
-				"url": "https://localhost:5001/connect/userinfo"
+				"url": "https://localhost:5016/api/Products/GetProducts"
+			},
+			"response": []
+		},
+		{
+			"name": "api2",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": {
+						"redirect_uri": "",
+						"headerPrefix": "Bearer",
+						"addTokenTo": "header"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "https://localhost:5021/api/Pictures/GetPictures"
 			},
 			"response": []
 		}
