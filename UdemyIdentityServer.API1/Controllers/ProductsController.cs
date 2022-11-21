@@ -34,12 +34,14 @@ namespace UdemyIdentityServer.API1.Controllers
         }
 
         [Authorize(Policy = "UpdateOrCreate")]//UpdateOrCreate=Policy ile UpdateOrCreate şartını sağlaması lazım bu şart ise startupdaki 58. satırdan bahsediyor. aynısını karışlıyorsa yapacak.Bu şartı sağlarsa bu metodu ulaşacak.Tokenin gelemesi yeterli değil, aynı zamanda scobunda ilgili authorize ne ise oda olması gerekiyor. 
+        [HttpPost]
         public IActionResult UpdateProduct(int id)
         {
             return Ok($"id'si {id} olan product güncellenmiştir");
         }
 
         [Authorize(Policy = "UpdateOrCreate")]
+        [HttpPost]
         public IActionResult CreateProduct(Product product)
         {
             return Ok(product);
